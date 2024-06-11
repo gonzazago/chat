@@ -1,0 +1,47 @@
+{
+  "name": "gonza.zago.translator",
+  "version": "1.0.0",
+  "description": "service responsible of translate query in natural languaje to sql/noSql",
+  "main": "./src/server.ts",
+  "scripts": {
+    "dev": "nodemon --exitcrash",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "author": "Gonzalo Sergio Zago",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.5.1",
+    "config-yml": "^0.10.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "module-alias": "^2.2.3",
+    "openai": "^4.48.1",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.2.2",
+    "uuidv4": "^6.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.19",
+    "jest": "^25.1.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "verbose": true
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@routes": "./src/routes",
+    "@config": "./src/config/",
+    "@domain": "./src/domain/entities/",
+    "@services": "./src/domain/services/",
+    "@repositories": "./src/domain/repositories/"
+  }
+}
