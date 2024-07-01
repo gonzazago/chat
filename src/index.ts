@@ -4,15 +4,10 @@ moduleAlias.addAliases({
     "@config": `${__dirname}/config/`,
     "@domain": `${__dirname}/domain/entities/`,
     "@services": `${__dirname}/domain/services/`,
-    "@repositories": `${__dirname}/infrastructure/repositories/`
+    "@repositories": `${__dirname}/domain/repositories/`
 })
 import server from './server';
-import connect from '@repositories/mongo';
 const PORT = process.env.PORT || 3000
-
-
-//connect to db
-connect();
 process.on("uncaughtException", (error: Error) => {
     console.error(`API has "uncaughtException" ${JSON.stringify(error)}`);
     process.exit(1);

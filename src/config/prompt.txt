@@ -10,11 +10,11 @@
 	        "skills": [
 		            {
 		                "name": string,
-		                ""years"": int
+		                "years": int
 		            },
 		            {
 		                "name": string,
-		                ""years"": int
+		                "years": int
 		            }
 	        	],
         	"experience": [
@@ -46,21 +46,20 @@ CONSIDERACIONES
 La consulta devuelta debe ser un OR, no utilices AND
 Ejemplo de respuesta
 {
-    "$or": [
+    $or: [
       {
-        "skills": {
-          "$in": [
-            { "skill": "windows server },
-            { "skill": "VMWARE" },
-            { "skill": "Cloud" },
-            { "skill": "HCI"},
-            { "skill": "Nutanix" },
-            { "skill": "Progres" }
+        skills: {
+          $in: [
+            { skill: "windows server", years: { $gt: 0 } },
+            { skill: "VMWARE", years: { $gt: 0 } },
+            { skill: "Cloud", years: { $gt: 0 } },
+            { skill: "HCI", years: { $gte: 0 } },
+            { skill: "Nutanix", years: { $gte: 0 } },
+            { skill: "Progres", years: { $gt: 0 } }
           ]
         }
       },
-      { "english": "B2" },
-      { "country": "AR" }
+      { english: "B2" },
+      { country: "AR" }
     ]
   }
-solo devuelve un json con la respuesta, en el formato especificado

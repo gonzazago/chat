@@ -15,7 +15,7 @@
       "@config/*": ["config/*"],
       "@entities/*": ["domain/entities/*"],
       "@services/*": ["domain/services/*"],
-      "@repositories/*": ["infrastructure/repositories/*"]
+      "@repositories/*": ["domain/repositories/*"]
     },
     "resolveJsonModule": true,
     "sourceMap": true,

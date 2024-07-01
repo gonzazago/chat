@@ -1,58 +1,29 @@
-
-import { ChatCompletionMessageParam } from "openai/resources";
-import { readFileSync } from 'fs'
-import { sendConversation } from "@repositories/openAi";
-import { candidateModel } from "@repositories/mongo/models/Candidate";
-
-const buildPrompt = async (conversation: ChatCompletionMessageParam[]) => {
-    const messages: ChatCompletionMessageParam[] = [];
-
+import { Chat } from '@entities/chat';
+import { Message } from '@entities/message'
+import { sendConversation } from '@repositories/openAi';
+import {readFileSync} from 'fs'
+const buildPrompt = async (conversation:Message[])=>{
+    const messages:Message[] = [];
+    
     const context = buildContext();
-    const message: ChatCompletionMessageParam = {
+    const message:Message = {
         role: "system",
-        content: context,
+        content:context,
     }
 
     messages.push(message)
     messages.push(...conversation)
 
-    // const query = await sendConversation(messages);
-    // console.log("query",query);
+    const completationResponse = await sendConversation(messages);
 
+    const chat = JSON.parse(completationResponse);
 
-    const query = `{
-    "$or": [
-        {
-            "skills": {
-                "$in": [
-                    { "name": "Python", "years": { "$gte": 5 } },
-                    { "name": "Kafka", "years": { "$gte": 5 } },
-                    { "name": "Rabbit", "years": { "$gte": 5 } },
-                    { "name": "AWS" }
-                ]
-            }
-        },
-        { "experience.position": { "$regex": "Sr", "$options": "i" } },
-        { "englishLevel": "C1" },
-        { "country": "AR" },
-        { "country": "UY" },
-        { "country": "CO" },
-        { "country": "PE" },
-        { "country": "BR" }
-    ]
-}
-`
-
-    const candidates = candidateModel.find(JSON.parse(query!!))
-
-
-
-    return candidates
+    return chat
 }
 
 
-const buildContext = () => {
-    const context = readFileSync('./src/config/prompt.txt', "utf-8")
+const buildContext = () =>{
+    const context = readFileSync('./src/config/prompt.txt',"utf-8")
     return context
 }
 
