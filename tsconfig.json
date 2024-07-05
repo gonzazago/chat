@@ -11,11 +11,12 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
-      "@api/*": ["routes/*"],
+      "@api/*": ["domain/routes/*"],
       "@config/*": ["config/*"],
       "@entities/*": ["domain/entities/*"],
-      "@services/*": ["domain/services/*"],
-      "@repositories/*": ["domain/repositories/*"]
+      "@services/*": ["application/services/*"],
+      "@repositories/*": ["domain/repositories/*"],
+      "@infrastructure/*": ["infrastructure/*"]
     },
     "resolveJsonModule": true,
     "sourceMap": true,

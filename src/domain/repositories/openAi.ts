@@ -1,23 +1,20 @@
 
-import { Chat } from "@entities/chat";
-import { Message } from '@entities/message';
-import { Configuration, OpenAIApi } from "openai";
 
-import axios from "axios"
+import OpenAI from "openai";
 
-const configuration = new Configuration({
-  apiKey: "sk-CvH53gmOMCAfWtefxw98T3BlbkFJCJ3VcAb7gDHgGdMe1i"
+import { ChatCompletionMessageParam } from "openai/resources";
+
+const openai = new OpenAI({
+  apiKey: "sk-proj-oBqoPbLs8vXBFQbhmhHIT3BlbkFJopLqLnRey4oKxF0n1khT",
 });
-const openai = new OpenAIApi(configuration);
 
-
-export const sendConversation = async (messages: Message[]) => {
+export const sendConversation = async (messages: ChatCompletionMessageParam[]) => {
 
   try {
 
 
     const chatCompletion = await openai.chat.completions.create({
-      model: "text-davinci-003",
+      model: "gpt-4o",
       messages: messages,
       max_tokens: 150,
       temperature: 0.5,
@@ -28,9 +25,11 @@ export const sendConversation = async (messages: Message[]) => {
 
   
 
-    const consultaMongoDB = chatCompletion.data.choices[0].text.trim();
-    console.log(consultaMongoDB)
-    return consultaMongoDB.choices[0]["message"]["content"];
+    const consultaMongoDB = chatCompletion.choices[0].message.content?.trim();
+    console.log("response",consultaMongoDB)
+    var query = consultaMongoDB?.replace("```json","").replace("```","")
+    console.log("query: ",query)
+    return query;
   } catch (e) {
     console.log(e)
   }

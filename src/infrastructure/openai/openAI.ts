@@ -5,7 +5,7 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 
 const openai = new OpenAI({
-  apiKey: "",
+  apiKey: "sk-proj-oBqoPbLs8vXBFQbhmhHIT3BlbkFJopLqLnRey4oKxF0n1khT",
 });
 
 export const sendConversation = async (messages: ChatCompletionMessageParam[]) => {

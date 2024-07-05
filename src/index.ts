@@ -3,8 +3,9 @@ moduleAlias.addAliases({
     "@routes": `${__dirname}/routes`,
     "@config": `${__dirname}/config/`,
     "@domain": `${__dirname}/domain/entities/`,
-    "@services": `${__dirname}/domain/services/`,
-    "@repositories": `${__dirname}/domain/repositories/`
+    "@services": `${__dirname}/application/services/`,
+    "@repositories": `${__dirname}/domain/repositories/`,
+    "@infrastructure": `${__dirname}/infrastructure/`
 })
 import server from './server';
 const PORT = process.env.PORT || 3000
