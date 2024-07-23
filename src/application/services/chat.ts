@@ -1,6 +1,7 @@
-import { sendConversation } from '@repositories/openAi';
+import { sendConversation } from '@repositories/open-ai/openAi';
 import { ChatCompletionMessageParam } from "openai/resources";
 import { readFileSync } from 'fs'
+import CandidatesModel from '@infrastructure/persistence/mongo/CandidatesModel';
 const buildPrompt = async (conversation: ChatCompletionMessageParam[]) => {
     const messages: ChatCompletionMessageParam[] = [];
 
@@ -14,9 +15,12 @@ const buildPrompt = async (conversation: ChatCompletionMessageParam[]) => {
     messages.push(...conversation)
 
     const completationResponse = await sendConversation(messages);
-    console.log(completationResponse);
-
-    return completationResponse
+    console.log(JSON.parse(completationResponse!!));
+    const rest = await CandidatesModel
+    .find(JSON.parse(completationResponse!!))
+    .limit(10)
+    .exec();
+    return rest
 }
 
 

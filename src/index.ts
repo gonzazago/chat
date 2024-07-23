@@ -2,7 +2,7 @@ import moduleAlias from 'module-alias'
 moduleAlias.addAliases({
     "@routes": `${__dirname}/routes`,
     "@config": `${__dirname}/config/`,
-    "@domain": `${__dirname}/domain/entities/`,
+    "@entities": `${__dirname}/domain/entities/`,
     "@services": `${__dirname}/application/services/`,
     "@repositories": `${__dirname}/domain/repositories/`,
     "@infrastructure": `${__dirname}/infrastructure/`

@@ -1,4 +1,4 @@
-        Translate the following natural language query to a MongoDB query. Here is the document structure:
+Translate the following natural language query to a MongoDB query. Here is the document structure:
 		{
 	        "name": string,
 	        "lastName": string,
@@ -43,19 +43,19 @@ CONSIDERACIONES
 * position: utiliza una regexp en este campo para matchear la posicion
 * english: es un enum cuyos valores son "A1,A2,B1,B2,C1,C2",
 * country: solo filtra si la busquedad explicitamente nombra pais de residencia, si nombra ciudades, ten el cuenta el pais de dicha ciudad, solo usa el codigo isocode
-La consulta devuelta debe ser un OR, no utilices AND
+La consulta devuelta debe ser un OR, no utilices AND, no olvides devolver las key del json entre comillas, NO agregues ```json``` 
 Ejemplo de respuesta
 {
-    $or: [
+    "$or": [
       {
         skills: {
-          $in: [
-            { skill: "windows server", years: { $gt: 0 } },
-            { skill: "VMWARE", years: { $gt: 0 } },
-            { skill: "Cloud", years: { $gt: 0 } },
-            { skill: "HCI", years: { $gte: 0 } },
-            { skill: "Nutanix", years: { $gte: 0 } },
-            { skill: "Progres", years: { $gt: 0 } }
+          "$in": [
+            { skill: "windows server", years: { "$gt": 0 } },
+            { skill: "VMWARE", years: { "$gt": 0 } },
+            { skill: "Cloud", years: { "$gt": 0 } },
+            { skill: "HCI", years: { "$gte": 0 } },
+            { skill: "Nutanix", years: { "$gte": 0 } },
+            { skill: "Progres", years: { "$gt": 0 } }
           ]
         }
       },

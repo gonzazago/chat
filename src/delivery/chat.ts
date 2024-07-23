@@ -12,6 +12,7 @@ router.post('/chat', (req: Request, res: Response) => {
     console.log(req.body)
     const conversation: ChatCompletionMessageParam[] = req.body;
     buildPrompt(conversation).then(completation => {
+        console.log(completation)
         res.status(200).json(completation)
     })
         .catch(e => {
