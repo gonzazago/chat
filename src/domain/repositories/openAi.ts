@@ -5,7 +5,7 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
 
 const openai = new OpenAI({
-  apiKey: "",
+  apiKey: "sk-proj-h712IDjgPyvTQkx1KXsCT3BlbkFJjDmfzlgexXhGalfnXge6",
 });
 
 export const sendConversation = async (messages: ChatCompletionMessageParam[]) => {
@@ -27,7 +27,6 @@ export const sendConversation = async (messages: ChatCompletionMessageParam[]) =
 
     const consultaMongoDB = chatCompletion.choices[0].message.content?.trim();
     var query = consultaMongoDB?.replace("```json","").replace("```","")
-    console.log("query: ",query)
     return query;
   } catch (e) {
     console.log(e)

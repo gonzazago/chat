@@ -1,7 +1,7 @@
 import { BaseEntity } from "@entities/BaseEntity";
 
-export interface IBaseService <T extends BaseEntity>{
-    getAll(): Promise<T[]>
+export interface IBaseService<T extends BaseEntity> {
+    getAll(filter: any): Promise<T[]>
     getById(id: string): Promise<T | null>
     save(entity: T): Promise<T>
     update(entity: T, id: string): Promise<T>

@@ -1,6 +1,4 @@
-
-
-import { getCandidates } from '@actions/GetCandidatesAction';
+import buildPrompt from '@services/chat';
 import express, { Request, Response } from 'express';
 import { ChatCompletionMessageParam } from "openai/resources";
 
@@ -11,17 +9,18 @@ const router = express.Router({
 });
 
 router.post('/chat', (req: Request, res: Response) => {
-    const offer = req.body[0].content;
+    console.log(req.body)
     const conversation: ChatCompletionMessageParam[] = req.body;
-
-    getCandidates(conversation, offer).then(completation => {
+    buildPrompt(conversation).then(completation => {
         res.status(200).json(completation)
-    }).catch(e => {
-        console.log(e);
-        res.status(500).json({
-            "status": 500,
-            "message": "internal server error"
-        })
     })
+        .catch(e => {
+            console.log(e);
+            res.status(500).json({
+                "status": 500,
+                "message":"internal server error"
+            })
+        });
+    ;
 });
 export default router;

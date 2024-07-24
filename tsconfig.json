@@ -15,6 +15,7 @@
       "@config/*": ["config/*"],
       "@entities/*": ["domain/entities/*"],
       "@services/*": ["application/services/*"],
+      "@actions/*": ["application/actions/*"],
       "@repositories/*": ["domain/repositories/*"],
       "@infrastructure/*": ["infrastructure/*"]
     },

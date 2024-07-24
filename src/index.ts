@@ -4,6 +4,7 @@ moduleAlias.addAliases({
     "@config": `${__dirname}/config/`,
     "@entities": `${__dirname}/domain/entities/`,
     "@services": `${__dirname}/application/services/`,
+    "@actions": `${__dirname}/application/actions/`,
     "@repositories": `${__dirname}/domain/repositories/`,
     "@infrastructure": `${__dirname}/infrastructure/`
 })

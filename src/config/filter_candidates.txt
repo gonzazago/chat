@@ -1,0 +1,6 @@
+
+Teniendo en cuenta los siguientes datos de candidatos para la siguiente posición deberas clasifícalos y
+ sugiere los más aptos, agregando una breve recomendacion sobre cada uno
+Candidatos:{lista_de_candidatos}
+Basado en los skills y la experiencia, determina los 5 candidatos más aptos para la posición, y explica por qué los seleccionaste.
+Deberas respondar la respuesta en formato JSON solamente

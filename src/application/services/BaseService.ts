@@ -5,8 +5,8 @@ import { IBaseService } from "./IBaseService";
 export function BaseService<T extends BaseEntity>(repository: BaseRepository<T>): IBaseService<T> {
 
     return {
-        getAll: async () => {
-            return repository.getAll();
+        getAll: async (filter: any) => {
+            return repository.getAll(filter);
         },
         getById: async (id: string) => {
             return repository.getById(id);

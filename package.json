@@ -44,6 +44,7 @@
     "@config": "./src/config/",
     "@entities": "./src/domain/entities/",
     "@services": "./src/application/services/",
+    "@actions": "./src/application/actions/",
     "@repositories": "./src/domain/repositories/",
     "@infrastructure": "./src/infrastructure/"
   }

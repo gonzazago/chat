@@ -1,12 +1,12 @@
-
+import { Chat } from '@entities/chat';
+import { Message } from '@entities/message'
+import { sendConversation } from '@repositories/openAi';
 import { ChatCompletionMessageParam } from "openai/resources";
 import { readFileSync } from 'fs'
-import CandidatesModel from '@infrastructure/persistence/mongo/CandidatesModel';
-import { sendConversation } from "@repositories/openAi";
 const buildPrompt = async (conversation: ChatCompletionMessageParam[]) => {
     const messages: ChatCompletionMessageParam[] = [];
 
-    const context = buildTranslateContext();
+    const context = buildContext();
     const message: ChatCompletionMessageParam = {
         role: "system",
         content: context,
@@ -16,17 +16,13 @@ const buildPrompt = async (conversation: ChatCompletionMessageParam[]) => {
     messages.push(...conversation)
 
     const completationResponse = await sendConversation(messages);
-    console.log(JSON.parse(completationResponse!!));
-    const rest = await CandidatesModel
-    .find(JSON.parse(completationResponse!!))
-    .limit(10)
-    .exec();
-    return rest
+
+    return completationResponse
 }
 
 
-const buildTranslateContext = () => {
-    const context = readFileSync(`${__dirname}/config/prompt.txt`, "utf-8")
+const buildContext = () => {
+    const context = readFileSync('./src/config/prompt.txt', "utf-8")
     return context
 }
 
