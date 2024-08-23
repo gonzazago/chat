@@ -9,7 +9,7 @@ moduleAlias.addAliases({
     "@infrastructure": `${__dirname}/infrastructure/`
 })
 import server from './server';
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
 process.on("uncaughtException", (error: Error) => {
     console.error(`API has "uncaughtException" ${JSON.stringify(error)}`);
     process.exit(1);

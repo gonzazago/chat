@@ -2,11 +2,7 @@
     "ignore":["node_modules", "dist"],
     "watch": ["src"],
     "ext": ".ts",
-    "exec": "ts-node ./src/index.ts",
-    "env":{
-      "PORT":"3000",
-      "ENV": "local"
-    }
+    "exec": "ts-node -r dotenv/config ./src/index.ts"
   }
   
   

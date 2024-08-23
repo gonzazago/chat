@@ -3,6 +3,7 @@ import { OpenAIService } from "@services/OpenAIService";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { candidateService } from '../services/CandidateService';
 import { createCandidateRepository } from "@repositories/CandidateRepository";
+import { Candidate, Experience } from "@entities/Candidate";
 
 
 
@@ -13,45 +14,97 @@ const service = candidateService(candidateRepository)
 
 
 export const getCandidates = async (context: ChatCompletionMessageParam[], jobOffer: string) => {
-    const filterContext = await openAIservice.buildCandidateClassificationContext();
+
+    const queryContext = await openAIservice.buildCandidateClassificationContext();
+    const messages = buildQueryPrompt(context, queryContext)
+    const completationResponse = await openAIservice.sendConversation(messages);
+    const candidates = await service.getAll(completationResponse);
+
+    const selectedContext = await openAIservice.buildCandidateFilterContext();
+    const filterPrompt = buildFilterPrompt(selectedContext, jobOffer, candidates)
+
+    const selected = await openAIservice.sendConversation(filterPrompt);
+    const candidatesFromIA = mapResponseToJson(selected);
+
+    const idsQuery = JSON.stringify({ _id: { $in: candidatesFromIA.map(sel => sel.id) } });
+
+    const candidatesResponse = await service.getAll(idsQuery)
+
+    const response = mapToCandidateResponse(candidatesResponse, candidatesFromIA)
+
+    return response;
+}
+
+
+const buildQueryPrompt = (context: ChatCompletionMessageParam[], prompt: string) => {
+
     const messages: ChatCompletionMessageParam[] = [];
     const message: ChatCompletionMessageParam = {
         role: "system",
-        content: filterContext,
+        content: prompt,
     }
 
     messages.push(message)
     messages.push(...context)
-    const completationResponse = await openAIservice.sendConversation(messages);
+    return messages
+}
 
-    const candidates = await service.getAll(completationResponse);
+const buildFilterPrompt = (selectedContext: string, jobOffer: string, candidates: Candidate[]) => {
 
-    
-    
+    const filterPrompt: ChatCompletionMessageParam[] = [];
 
-    const selectedContext = await openAIservice.buildCandidateFilterContext();
-
-    const filterMessages: ChatCompletionMessageParam[] = [];
-
-    filterMessages.push({
+    filterPrompt.push({
         role: "system",
         content: selectedContext,
     })
 
-    filterMessages.push({
+    filterPrompt.push({
         role: "assistant",
         content: `la busqueda laboral es la siguiente ${jobOffer}`
     })
-    filterMessages.push({
+    filterPrompt.push({
         role: "assistant",
-        content: ` Deberas tomar en cuenta los empleados de la siguiente lista${candidates}, RECUERDA DEBOLVER UN JSON`
+        content: ` Deberas tomar en cuenta los empleados de la siguiente lista${candidates}, 
+        Deberas respondar la respuesta en formato JSON solamente
+        utiliza la siguiente estructura por cada candidato:
+            {
+                "id":string,
+                "strengths:":[string]
+                "weaknesses":[string]
+                "feedbak":string
+            }
+        donde en los campos strengths y weaknesses, deberas armar una lista de hasta 5 atributos como maximo y
+        un feedback que no supere las 20 palabras`
     })
 
-    const selected = await openAIservice.sendConversation(filterMessages);
-    console.log("selected",selected);
+    return filterPrompt;
+}
 
-    return selected;
+const mapResponseToJson = (reponse: string) => JSON.parse(reponse);
 
+const mapToCandidateResponse = (candidates: Candidate[], candidateSelects) => {
+
+    const response = candidates.map((candidate, index) => {
+        const sel = candidateSelects.find(c => c.id == candidate.id)
+        const exp: Experience[] = candidate.experience;
+        let position;
+        // if (Array.isArray(exp)) {
+            console.log(candidate.experience)
+            position = exp.find(c => c.actually)?.position
+        // }
+
+        return {
+            id: candidate.id,
+            name: candidate.name,
+            position: position,
+            linkedin: candidate.linkedinUrl,
+            strengths: sel.strengths,
+            weaknesses: sel.weaknesses,
+            feedback: sel.feedback
+        };
+    });
+
+    return response;
 
 
 }

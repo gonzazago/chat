@@ -6,7 +6,7 @@ import { readFileSync } from 'fs';
 
 
 const openai = new OpenAI({
-    apiKey: "sk-proj-h712IDjgPyvTQkx1KXsCT3BlbkFJjDmfzlgexXhGalfnXge6",
+    apiKey: process.env.OPEN_AI_KEY,
   });
 
 

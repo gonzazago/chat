@@ -5,7 +5,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import router from './delivery';
 import connectDB from '@infrastructure/persistence/connection';
-
+import dotenv from 'dotenv'; 
+dotenv.config();
 const app: Express = express();
 app.use(cors());
 

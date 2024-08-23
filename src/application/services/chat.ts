@@ -16,7 +16,6 @@ const buildPrompt = async (conversation: ChatCompletionMessageParam[]) => {
     messages.push(...conversation)
 
     const completationResponse = await sendConversation(messages);
-    console.log(JSON.parse(completationResponse!!));
     const rest = await CandidatesModel
     .find(JSON.parse(completationResponse!!))
     .limit(10)

@@ -16,6 +16,7 @@
     "axios": "^1.5.1",
     "config-yml": "^0.10.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.17.1",
     "module-alias": "^2.2.3",
     "mongoose": "^8.4.4",
