@@ -14,7 +14,7 @@ export interface Candidate extends BaseEntity{
 }
 export interface Experience {
     position:    string;
-    init:        string;
+    startDate:        string;
     end:         null | string;
     actually:    boolean;
     company:     string;

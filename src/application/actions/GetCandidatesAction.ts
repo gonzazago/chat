@@ -88,18 +88,15 @@ const mapToCandidateResponse = (candidates: Candidate[], candidateSelects) => {
         const sel = candidateSelects.find(c => c.id == candidate.id)
         const exp: Experience[] = candidate.experience;
         let position;
-        // if (Array.isArray(exp)) {
-            console.log(candidate.experience)
             position = exp.find(c => c.actually)?.position
-        // }
 
         return {
             id: candidate.id,
             name: candidate.name,
             position: position,
             linkedin: candidate.linkedinUrl,
-            strengths: sel.strengths,
-            weaknesses: sel.weaknesses,
+            strengths: sel.strengths.join(" "),
+            weaknesses: sel.weaknesses.join(" "),
             feedback: sel.feedback
         };
     });

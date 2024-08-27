@@ -1,6 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 import { Candidate, Skill, Experience } from '@entities/Candidate';
 
+const experienceSchema = new Schema<Experience>({
+    position: { type: String },
+    startDate: { type: String },
+    end: { type: String, default: "" },
+    actually: { type: Boolean },
+    company: { type: String },
+    description: { type: String },
+})
+
 const CandidateSchema = new Schema<Candidate>({
     name: { type: String },
     lastName: { type: String },
@@ -10,7 +19,7 @@ const CandidateSchema = new Schema<Candidate>({
     linkedinUrl: { type: String },
     extract: { type: String, },
     skills: { typeof: Array<Skill>, },
-    experience: { typeof: Array<Experience>, default: [] },
+    experience: [experienceSchema],
     englishLevel: { type: String },
 })
 
