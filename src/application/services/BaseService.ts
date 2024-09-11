@@ -2,26 +2,31 @@ import { BaseEntity } from "@entities/BaseEntity";
 import { BaseRepository } from "@repositories/BaseRepository";
 import { IBaseService } from "./IBaseService";
 
-export function BaseService<T extends BaseEntity>(repository: BaseRepository<T>): IBaseService<T> {
+export class BaseService<T extends BaseEntity> implements IBaseService<T> {
+    private repository: BaseRepository<T>;
 
-    return {
-        getAll: async (filter: any) => {
-            return repository.getAll(filter);
-        },
-        getById: async (id: string) => {
-            return repository.getById(id);
-        },
-        save:async (entity:T) => {
-            return await repository.save(entity);
-        },
-        update:async (entity:T,id: string) => {
-            return await repository.update(entity,id);
-        },
-        delete:async (id:string) => {
-            repository.delete(id)
-        }
-
+    constructor(repository: BaseRepository<T>) {
+        this.repository = repository;
     }
 
+    async getAll(filter: any): Promise<T[]> {
+        return this.repository.getAll(filter);
+    }
+
+    async getById(id: string): Promise<T | null> {
+        return this.repository.getById(id);
+    }
+
+    async save(entity: T): Promise<T> {
+        return await this.repository.save(entity);
+    }
+
+    async update(entity: T, id: string): Promise<T> {
+        return await this.repository.update(entity, id);
+    }
+
+    async delete(id: string): Promise<void> {
+        await this.repository.delete(id);
+    }
 }
 

@@ -6,6 +6,7 @@ import cors from 'cors';
 import router from './delivery';
 import connectDB from '@infrastructure/persistence/connection';
 import dotenv from 'dotenv'; 
+
 dotenv.config();
 const app: Express = express();
 app.use(cors());
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 // parse application/json
 app.use("/api",router) 
 app.use(bodyParser.json({ limit: '50mb' }));
+
 
 connectDB();
 

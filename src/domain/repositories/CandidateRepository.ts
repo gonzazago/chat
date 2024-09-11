@@ -6,7 +6,12 @@ export const createCandidateRepository = (): ICandidateRepository => {
 
     return {
         getAll: async (filter: any) => {
-            return CandidatesModel.find(JSON.parse(filter)).limit(20).exec();
+            if (typeof filter === "string") {
+                return CandidatesModel.find(JSON.parse(filter)).limit(20).exec();
+            } else {
+                return CandidatesModel.find(filter).limit(20).exec();
+            }
+
         },
         getById: async (id: string) => {
             return null
@@ -22,8 +27,6 @@ export const createCandidateRepository = (): ICandidateRepository => {
 
         },
         update: async (entity: Candidate, candidateId: string) => {
-
-
             const candidateUpdate = await CandidatesModel.findByIdAndUpdate(candidateId, entity);
             if (!candidateUpdate) {
                 return Promise.reject(`Candidate not found for id[${candidateId}]`)
