@@ -1,174 +1,70 @@
-import { ChatCompletionMessageParam } from "openai/resources";
-import { Candidate, Experience } from "@entities/Candidate"
-import { OpenAIService } from "@services/OpenAIService";
-import CandidateService from '@services/CandidateService';
-import Container from "@infrastructure/container/Container";
-
+import {ChatCompletionMessageParam} from 'openai/resources';
+import {Candidate} from '@entities/Candidate';
+import Container from '@infrastructure/container/Container';
+import {IOpenAIService} from '@services/IOpenAIService';
+import {IEmbeddingService} from '@services/IEmbeddingService';
+import CandidateService from "@services/impl/CandidateService";
+import {BaseMessage} from "@langchain/core/messages";
+import {CandidateDTO, mapToCandidateDTO} from "../../delivery/dto/Candidate";
 
 export class GetCandidatesAction {
-    private openAIservice: OpenAIService;
-    private service: CandidateService;
 
-    constructor() {
-        this.service = Container.getInstance().resolve<CandidateService>("ICandidateService");
-        this.openAIservice = Container.getInstance().resolve<OpenAIService>("OpenAIService");;
-    }
+    constructor(
+        private candidateService: CandidateService,
+        private openAIService: IOpenAIService,
+        private embeddingService: IEmbeddingService
+    ) {}
 
-    public async getCandidates(context: ChatCompletionMessageParam[], jobOffer: string) {
-        const queryContext = await this.openAIservice.buildCandidateClassificationContext();
-        const messages = this.buildQueryPrompt(context, queryContext)
-        const completationResponse = this.openAIservice.sendConversation(messages);
-        const candidates = await this.service.getAll(completationResponse);
+    public async getCandidates(context: ChatCompletionMessageParam[], jobOffer: string): Promise<CandidateDTO[] | null> {
+        try {
+            const embedding = await this.embeddingService.getEmbedding(jobOffer);
+            const candidates: Candidate[] = await this.candidateService.searchByVector(embedding, 50);
+            if (candidates.length === 0) return null;
 
-        const selectedContext = await this.openAIservice.buildCandidateFilterContext();
-        const filterPrompt = this.buildFilterPrompt(selectedContext, jobOffer, candidates)
+            const selectedContext = await this.openAIService.buildCandidateFilterContext();
+            const filterPrompt = this.buildFilterPrompt(selectedContext, jobOffer, candidates);
+            console.log(filterPrompt);
+            const selected = await this.openAIService.sendConversation(filterPrompt);
 
-        const selected = await this.openAIservice.sendConversation(filterPrompt);
-        const candidatesFromIA = this.mapResponseToJson(selected);
+            const candidatesFromIA = this.mapResponseToJson(selected!!);
 
-        const idsQuery = JSON.stringify({ _id: { $in: candidatesFromIA.map(sel => sel.id) } });
-
-        const candidatesResponse = await this.service.getAll(idsQuery)
-
-        const response = mapToCandidateResponse(candidatesResponse, candidatesFromIA)
-
-        return response;
-    }
-
-    private buildQueryPrompt(context: ChatCompletionMessageParam[], prompt: string) {
-        const messages: ChatCompletionMessageParam[] = [];
-        const message: ChatCompletionMessageParam = {
-            role: "system",
-            content: prompt,
+            // 4. Mapear respuesta final
+            return mapToCandidateDTO(candidates, candidatesFromIA);
+            return null
+        } catch (error) {
+            console.error('Error en getCandidates:', error);
+            throw error;
         }
-
-        messages.push(message)
-        messages.push(...context)
-        return messages
     }
-    private buildFilterPrompt(selectedContext: string, jobOffer: string, candidates: Candidate[]) {
-        const filterPrompt: ChatCompletionMessageParam[] = [];
 
-        filterPrompt.push({
-            role: "system",
-            content: selectedContext,
-        })
-
-        filterPrompt.push({
-            role: "assistant",
-            content: `la busqueda laboral es la siguiente ${jobOffer}`
-        })
-        filterPrompt.push({
-            role: "assistant",
-            content: ` Deberas tomar en cuenta los empleados de la siguiente lista${candidates}, 
-        Deberas respondar la respuesta en formato JSON solamente
-        utiliza la siguiente estructura por cada candidato:
-            {
-                "id":string,
-                "strengths:":[string]
-                "weaknesses":[string]
-                "feedbak":string
-            }
-        donde en los campos strengths y weaknesses, deberas armar una lista de hasta 5 atributos como maximo y
-        un feedback que no supere las 20 palabras`
-        })
-
-        return filterPrompt;
-    }
-    private mapResponseToJson(reponse: string) { return JSON.parse(reponse); }
-
-    private mapToCandidateResponse(candidates: Candidate[], candidateSelects) {
-
-        const response = candidates.map((candidate, index) => {
-            const sel = candidateSelects.find(c => c.id == candidate.id)
-            const exp: Experience[] = candidate.experience;
-            let position;
-            position = exp.find(c => c.actually)?.position
+    private buildFilterPrompt(selectedContext: string, jobOffer: string, candidates: Candidate[]): BaseMessage[] {
+        console.log('Candidates:', candidates);
+        const simplifyCandidates =  candidates.map((candidate) => {
+            const currentPosition = candidate.experience?.find(e => e.actually)?.position;
 
             return {
-                id: candidate.id,
+                id: candidate.id, // Este es el ID del documento Mongo (u otro identificador)
                 name: candidate.name,
-                position: position,
-                linkedin: candidate.linkedinUrl,
-                strengths: sel.strengths.join(" "),
-                weaknesses: sel.weaknesses.join(" "),
-                feedback: sel.feedback
+                position: currentPosition,
+                skills: candidate.skills?.map(skill => `${skill.name} (${skill.years} años)`)
             };
         });
-
-        return response;
-
-
+        return this.openAIService.buildLangChainMessages([
+            {
+                role: 'system',
+                content: `La búsqueda laboral es: ${jobOffer}`
+            },
+            {
+                role: 'system',
+                content: `Deberás evaluar los siguientes candidatos:\n${JSON.stringify(simplifyCandidates)}\n` +
+                    `Respondé SOLO en formato JSON:\n` +
+                    `{\n  "id": string,\n  "strengths": [string],\n  "weaknesses": [string],\n  "feedback": string\n}`
+            }
+        ], selectedContext);
     }
-}
 
-
-// const buildQueryPrompt = (context: ChatCompletionMessageParam[], prompt: string) => {
-
-//     const messages: ChatCompletionMessageParam[] = [];
-//     const message: ChatCompletionMessageParam = {
-//         role: "system",
-//         content: prompt,
-//     }
-
-//     messages.push(message)
-//     messages.push(...context)
-//     return messages
-// }
-
-// const buildFilterPrompt = (selectedContext: string, jobOffer: string, candidates: Candidate[]) => {
-
-//     const filterPrompt: ChatCompletionMessageParam[] = [];
-
-//     filterPrompt.push({
-//         role: "system",
-//         content: selectedContext,
-//     })
-
-//     filterPrompt.push({
-//         role: "assistant",
-//         content: `la busqueda laboral es la siguiente ${jobOffer}`
-//     })
-//     filterPrompt.push({
-//         role: "assistant",
-//         content: ` Deberas tomar en cuenta los empleados de la siguiente lista${candidates}, 
-//         Deberas respondar la respuesta en formato JSON solamente
-//         utiliza la siguiente estructura por cada candidato:
-//             {
-//                 "id":string,
-//                 "strengths:":[string]
-//                 "weaknesses":[string]
-//                 "feedbak":string
-//             }
-//         donde en los campos strengths y weaknesses, deberas armar una lista de hasta 5 atributos como maximo y
-//         un feedback que no supere las 20 palabras`
-//     })
-
-//     return filterPrompt;
-// }
-
-// const mapResponseToJson = (reponse: string) => JSON.parse(reponse);
-
-const mapToCandidateResponse = (candidates: Candidate[], candidateSelects) => {
-
-    const response = candidates.map((candidate, index) => {
-        const sel = candidateSelects.find(c => c.id == candidate.id)
-        const exp: Experience[] = candidate.experience;
-        let position;
-        position = exp.find(c => c.actually)?.position
-
-        return {
-            id: candidate.id,
-            name: candidate.name,
-            position: position,
-            linkedin: candidate.linkedinUrl,
-            strengths: sel.strengths.join(" "),
-            weaknesses: sel.weaknesses.join(" "),
-            feedback: sel.feedback
-        };
-    });
-
-    return response;
-
+    private mapResponseToJson(response: string): any {
+        return JSON.parse(response);
+    }
 
 }

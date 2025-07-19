@@ -1,8 +1,8 @@
 import { openAiRepository } from "@repositories/openAi/OpenAIRepository";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { Candidate, Experience } from "@entities/Candidate"
-import { OpenAIService } from "@services/OpenAIService";
-import CandidateService from '@services/CandidateService';
+import { OpenAIService } from "@services/impl/OpenAIService";
+import CandidateService from '@services/impl/CandidateService';
 import OpenAI from 'openai';
 import Container from "@infrastructure/container/Container";
 
@@ -13,7 +13,7 @@ export class GetCandidatesByQueryAction {
 
     constructor() {
         this.service = Container.getInstance().resolve<CandidateService>("ICandidateService");
-        this.openAIservice = Container.getInstance().resolve<OpenAIService>("OpenAIService");;
+        this.openAIservice = Container.getInstance().resolve<OpenAIService>("OpenAIService");
     }
 
     public async getCandidates(skill?: string, englishLevel?: string) {
@@ -25,7 +25,7 @@ export class GetCandidatesByQueryAction {
 
         // // Filtro por país (array)
         // if (country && country.length > 0) {
-        //     query.country = { $in: country }; 
+        //     query.country = { $in: country };
         // }
 
         // Filtro por nivel de inglés (array)

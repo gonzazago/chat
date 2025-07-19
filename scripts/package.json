@@ -7,7 +7,9 @@
   "author": "Gonzalo Sergio Zago",
   "license": "ISC",
   "dependencies": {
+    "@elastic/elasticsearch": "8",
     "@faker-js/faker": "^8.4.1",
-    "faker": "^6.6.6"
+    "faker": "^6.6.6",
+    "uuid": "^11.1.0"
   }
 }

@@ -6,11 +6,20 @@ export const createCandidateRepository = (): ICandidateRepository => {
 
     return {
         getAll: async (filter: any) => {
-            if (typeof filter === "string") {
-                return CandidatesModel.find(JSON.parse(filter)).limit(20).exec();
-            } else {
-                return CandidatesModel.find(filter).limit(20).exec();
+            try {
+                if (typeof filter === "string") {
+                    const filterMongo =  JSON.parse(filter)
+                    const candidates =await CandidatesModel.find(filterMongo).limit(20).exec();
+                    return candidates
+                } else {
+                    const candidates =await CandidatesModel.find(filter).limit(20).exec();
+                    return candidates
+                }
+            }catch (e){
+                console.log(e)
+                throw e
             }
+
 
         },
         getById: async (id: string) => {

@@ -10,6 +10,12 @@ const experienceSchema = new Schema<Experience>({
     description: { type: String },
 })
 
+// 1. Define un schema para los objetos 'Skill' (Recomendado)
+const skillSchema = new Schema<Skill>({
+    name: { type: String },
+    years: { type: Number }
+}, { _id: false });
+
 const CandidateSchema = new Schema<Candidate>({
     name: { type: String },
     lastName: { type: String },
@@ -18,7 +24,7 @@ const CandidateSchema = new Schema<Candidate>({
     phone: { type: String },
     linkedinUrl: { type: String },
     extract: { type: String, },
-    skills: { typeof: Array<Skill>, },
+    skills: [skillSchema],
     experience: [experienceSchema],
     englishLevel: { type: String },
 })

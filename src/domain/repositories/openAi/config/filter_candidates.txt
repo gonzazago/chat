@@ -4,3 +4,15 @@ Teniendo en cuenta los siguientes datos de candidatos para la siguiente posició
 Candidatos:{lista_de_candidatos}
 Basado en los skills y la experiencia, determina los 5 candidatos más aptos para la posición, y explica por qué los seleccionaste.
 Deberas respondar la respuesta en formato JSON solamente
+utiliza la siguiente estructura por cada candidato:
+{
+    "id":string,
+    "nombre": string,
+    "position": string,
+    "linkedin:" "string",
+    "strengths:":[string]
+    "weaknesses":[string]
+    "feedbak":string
+}
+donde en los campos strengths y weaknesses, deberas armar una lista de hasta 5 atributos como maximo y
+ un feedback que no supere las 20 palabras
